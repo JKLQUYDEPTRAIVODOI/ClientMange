@@ -1,46 +1,53 @@
 const jwt = require('jsonwebtoken');
-const db = require('../config/db');
+const pool = require('../config/db');
 
-exports.verifyToken = async (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     
     if (!token) {
-      return res.status(401).json({ message: 'Không tìm thấy token xác thực' });
+      return res.status(401).json({ message: 'No token provided' });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    
+    // Get user from database using the correct property name (id)
+    const [users] = await pool.query(
+      'SELECT u.*, r.name as role FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?',
+      [decoded.id]  // Using decoded.id to match the token payload
+    );
+
+    if (users.length === 0) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    req.user = users[0];
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Token không hợp lệ' });
+    console.error('Auth error:', error);
+    return res.status(401).json({ message: 'Invalid token', error: error.message });
   }
 };
 
-exports.checkRole = (roles) => {
-  return async (req, res, next) => {
-    try {
-      const [users] = await db.execute(
-        'SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?',
-        [req.user.userId]
-      );
-
-      if (users.length === 0) {
-        return res.status(404).json({ message: 'Không tìm thấy người dùng' });
-      }
-
-      const userRole = users[0].role_name;
-
-      if (!roles.includes(userRole)) {
-        return res.status(403).json({ 
-          message: 'Bạn không có quyền truy cập chức năng này' 
-        });
-      }
-
-      next();
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Lỗi server' });
+const checkRole = (roleName) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
     }
+
+    if (req.user.role !== roleName) {
+      return res.status(403).json({ 
+        message: 'Access denied',
+        required: roleName,
+        current: req.user.role
+      });
+    }
+
+    next();
   };
+};
+
+module.exports = {
+  verifyToken,
+  checkRole
 }; 

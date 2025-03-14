@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const doctorController = require('../controllers/doctorController');
 const { verifyToken, checkRole } = require('../middleware/authMiddleware');
 
-// Middleware để kiểm tra quyền bác sĩ
-router.use(verifyToken, checkRole(['doctor', 'admin']));
+// Apply authentication middleware to all routes
+router.use(verifyToken);
+router.use(checkRole('doctor'));
+
+// Profile routes
+router.get('/profile', doctorController.getProfile);
+router.put('/profile', doctorController.updateProfile);
 
 // Routes dành cho bác sĩ
 router.get('/patients', async (req, res) => {

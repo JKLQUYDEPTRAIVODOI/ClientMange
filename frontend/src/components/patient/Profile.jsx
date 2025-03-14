@@ -16,9 +16,9 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  Container,
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
-import PatientLayout from '../layouts/PatientLayout';
 import axios from 'axios';
 
 const Profile = () => {
@@ -29,7 +29,7 @@ const Profile = () => {
     severity: 'success'
   });
   const [profileData, setProfileData] = useState({
-    username: '',
+    fullname: '',
     email: '',
     dateOfBirth: '',
     gender: '',
@@ -52,7 +52,7 @@ const Profile = () => {
       });
       
       setProfileData({
-        username: response.data.username,
+        fullname: response.data.fullname,
         email: response.data.email,
         dateOfBirth: response.data.date_of_birth || '',
         gender: response.data.gender || '',
@@ -109,7 +109,7 @@ const Profile = () => {
         severity: 'success'
       });
       handleCloseDialog();
-      fetchProfile(); // Tải lại thông tin sau khi cập nhật
+      fetchProfile();
     } catch (error) {
       console.error('Error saving profile:', error);
       setSnackbar({
@@ -129,7 +129,7 @@ const Profile = () => {
   };
 
   const InfoSection = ({ title, children }) => (
-    <Paper sx={{ p: 3, mb: 3 }}>
+    <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
       <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
         {title}
       </Typography>
@@ -151,9 +151,12 @@ const Profile = () => {
   );
 
   return (
-    <PatientLayout>
-      <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+    <Container maxWidth="lg">
+      <Box sx={{ py: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Typography variant="h4" component="h1">
+            Hồ sơ bệnh nhân
+          </Typography>
           <Button
             variant="contained"
             startIcon={<EditIcon />}
@@ -164,7 +167,7 @@ const Profile = () => {
         </Box>
 
         <InfoSection title="Thông tin cá nhân">
-          <InfoRow label="Họ và tên" value={profileData.username} />
+          <InfoRow label="Họ và tên" value={profileData.fullname} />
           <InfoRow label="Ngày sinh" value={profileData.dateOfBirth} />
           <InfoRow label="Giới tính" value={profileData.gender} />
           <InfoRow label="Quốc tịch" value={profileData.nationality} />
@@ -178,7 +181,6 @@ const Profile = () => {
           <InfoRow label="Dị ứng" value={profileData.allergies} />
         </InfoSection>
 
-        {/* Dialog để cập nhật thông tin */}
         <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
           <DialogTitle>Cập nhật thông tin</DialogTitle>
           <DialogContent>
@@ -187,9 +189,9 @@ const Profile = () => {
                 <TextField
                   fullWidth
                   label="Họ và tên"
-                  name="username"
-                  value={profileData.username}
-                  disabled
+                  name="fullname"
+                  value={profileData.fullname}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -288,29 +290,24 @@ const Profile = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>Hủy</Button>
-            <Button variant="contained" onClick={handleSaveProfile}>
-              Lưu thông tin
+            <Button onClick={handleSaveProfile} variant="contained">
+              Lưu thay đổi
             </Button>
           </DialogActions>
         </Dialog>
 
-        {/* Snackbar thông báo */}
         <Snackbar
           open={snackbar.open}
           autoHideDuration={6000}
           onClose={handleCloseSnackbar}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={snackbar.severity}
-            sx={{ width: '100%' }}
-          >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
             {snackbar.message}
           </Alert>
         </Snackbar>
       </Box>
-    </PatientLayout>
+    </Container>
   );
 };
 

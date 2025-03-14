@@ -7,7 +7,6 @@ import {
   Assignment as AssignmentIcon,
   Notifications as NotificationsIcon,
 } from '@mui/icons-material';
-import PatientLayout from '../layouts/PatientLayout';
 
 const StatCard = ({ icon, title, value, color }) => (
   <Paper
@@ -48,61 +47,59 @@ const PatientDashboard = () => {
   const { user } = useAuth();
 
   return (
-    <PatientLayout>
-      <Container maxWidth="lg">
-        <Box sx={{ mt: 4, mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Patient Dashboard
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            Xin chào, {user?.username}!
-          </Typography>
+    <Container maxWidth="lg">
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Trang chủ
+        </Typography>
+        <Typography variant="h6" gutterBottom>
+          Xin chào, {user?.username}!
+        </Typography>
 
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Thông tin cá nhân
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Thông tin cá nhân
+              </Typography>
+              <Box>
+                <Typography>
+                  <strong>Tên:</strong> {user?.username}
                 </Typography>
-                <Box>
-                  <Typography>
-                    <strong>Tên:</strong> {user?.username}
-                  </Typography>
-                  <Typography>
-                    <strong>Email:</strong> {user?.email}
-                  </Typography>
-                  <Typography>
-                    <strong>Vai trò:</strong> Bệnh nhân
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Lịch hẹn sắp tới
+                <Typography>
+                  <strong>Email:</strong> {user?.email}
                 </Typography>
-                <Typography color="text.secondary">
-                  Chưa có lịch hẹn nào
+                <Typography>
+                  <strong>Vai trò:</strong> Bệnh nhân
                 </Typography>
-              </Paper>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Lịch sử khám bệnh
-                </Typography>
-                <Typography color="text.secondary">
-                  Chưa có lịch sử khám bệnh
-                </Typography>
-              </Paper>
-            </Grid>
+              </Box>
+            </Paper>
           </Grid>
-        </Box>
-      </Container>
-    </PatientLayout>
+          
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Lịch hẹn sắp tới
+              </Typography>
+              <Typography color="text.secondary">
+                Chưa có lịch hẹn nào
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Lịch sử khám bệnh
+              </Typography>
+              <Typography color="text.secondary">
+                Chưa có lịch sử khám bệnh
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </Container>
   );
 };
 
